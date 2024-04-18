@@ -10,6 +10,8 @@ public class Game1 : Game
     private SpriteBatch _spriteBatch;
 
     private Texture2D _texture;
+    private Effect _shader;
+    private float _totalTime;
 
     public Rectangle SCREEN_RECT
     {
@@ -29,6 +31,8 @@ public class Game1 : Game
         _graphics.PreferredBackBufferHeight = (int)(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height * 0.75f);
         _graphics.ApplyChanges();
 
+        _totalTime = 0.0f;
+
         base.Initialize();
     }
 
@@ -36,7 +40,8 @@ public class Game1 : Game
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-        _texture = this.Content.Load<Texture2D>("tbound-screenshot");
+        _texture = this.Content.Load<Texture2D>("tbound-screenshot-2");
+        _shader = this.Content.Load<Effect>("Shaders/Wavepool");
     }
 
     protected override void Update(GameTime gameTime)
@@ -44,13 +49,18 @@ public class Game1 : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-        // TODO: Add your update logic here
+        _totalTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
         base.Update(gameTime);
     }
 
     protected override void Draw(GameTime gameTime)
     {
+        Vector2 scale = new Vector2(
+            (float)SCREEN_RECT.Width / (float)_texture.Width,
+            (float)SCREEN_RECT.Height / (float)_texture.Height
+        );
+
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
         // drawing background
@@ -58,27 +68,32 @@ public class Game1 : Game
         GraphicsDevice.SetRenderTarget(customTarget);
 
         _spriteBatch.Begin();
-
-        Vector2 scale = new Vector2(
-            (float)SCREEN_RECT.Width / (float)_texture.Width,
-            (float)SCREEN_RECT.Height / (float)_texture.Height
-        );
-        for (int i = 0; i < 10; i++) {
-            _spriteBatch.Draw(_texture, new Vector2(i * 100.0f), null, Color.White, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
-        }
-
+        _spriteBatch.Draw(_texture, Vector2.Zero, null, Color.White, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
         _spriteBatch.End();
 
-
-
         // drawing it again!
-
         GraphicsDevice.SetRenderTarget(null);
 
         _spriteBatch.Begin();
+        _spriteBatch.Draw(customTarget, Vector2.Zero, null, Color.White, 0.0f, Vector2.Zero, Vector2.One, SpriteEffects.None, 0.0f);
+        _spriteBatch.End();
 
-        _spriteBatch.Draw(customTarget, new Vector2(100.0f, 100.0f), null, Color.White, 50.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
-
+        // drawing a watery reflection!
+        _spriteBatch.Begin(effect: _shader);
+        _shader.Parameters["time"].SetValue(_totalTime);
+        _shader.Parameters["period"].SetValue(32.0f);
+        _shader.Parameters["texOffsetMult"].SetValue(0.01f);
+        _spriteBatch.Draw(
+            customTarget,
+            new Vector2(0.0f, (float)SCREEN_RECT.Height / 2.0f),
+            new Rectangle(0, 0, customTarget.Width, customTarget.Height / 2),
+            Color.CornflowerBlue,
+            0.0f,
+            Vector2.Zero,
+            Vector2.One,
+            SpriteEffects.FlipVertically,
+            0.0f
+        );
         _spriteBatch.End();
 
         base.Draw(gameTime);
