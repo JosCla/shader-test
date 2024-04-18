@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -86,6 +87,16 @@ public class Game1 : Game
         _dripdropShader.Parameters["time"].SetValue(_totalTime);
         _dripdropShader.Parameters["texOffsetMult"].SetValue(0.1f);
         _dripdropShader.Parameters["sharpness"].SetValue(0.02f);
+        _dripdropShader.Parameters["numDrops"].SetValue(3);
+        _dripdropShader.Parameters["dropCenters"].Elements[0].SetValue(
+            new Vector2(300.0f, 50.0f)
+        );
+        _dripdropShader.Parameters["dropCenters"].Elements[1].SetValue(
+            new Vector2(100.0f, 100.0f)
+        );
+        _dripdropShader.Parameters["dropCenters"].Elements[2].SetValue(
+            new Vector2(700.0f, 200.0f)
+        );
 
         /*
         _spriteBatch.Begin(effect: _wavepoolShader);
