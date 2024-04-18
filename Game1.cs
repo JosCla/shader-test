@@ -10,8 +10,10 @@ public class Game1 : Game
     private SpriteBatch _spriteBatch;
 
     private Texture2D _texture;
-    private Effect _shader;
     private float _totalTime;
+
+    private Effect _dripdropShader;
+    private Effect _wavepoolShader;
 
     public Rectangle SCREEN_RECT
     {
@@ -41,7 +43,8 @@ public class Game1 : Game
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
         _texture = this.Content.Load<Texture2D>("tbound-screenshot-2");
-        _shader = this.Content.Load<Effect>("Shaders/Wavepool");
+        _dripdropShader = this.Content.Load<Effect>("Shaders/Dripdrop");
+        _wavepoolShader = this.Content.Load<Effect>("Shaders/Wavepool");
     }
 
     protected override void Update(GameTime gameTime)
@@ -79,10 +82,18 @@ public class Game1 : Game
         _spriteBatch.End();
 
         // drawing a watery reflection!
-        _spriteBatch.Begin(effect: _shader);
-        _shader.Parameters["time"].SetValue(_totalTime);
-        _shader.Parameters["period"].SetValue(32.0f);
-        _shader.Parameters["texOffsetMult"].SetValue(0.01f);
+        _spriteBatch.Begin(effect: _dripdropShader);
+        _dripdropShader.Parameters["time"].SetValue(_totalTime);
+        _dripdropShader.Parameters["texOffsetMult"].SetValue(0.1f);
+        _dripdropShader.Parameters["sharpness"].SetValue(0.02f);
+
+        /*
+        _spriteBatch.Begin(effect: _wavepoolShader);
+        _wavepoolShader.Parameters["time"].SetValue(_totalTime);
+        _wavepoolShader.Parameters["texOffsetMult"].SetValue(0.01f);
+        _wavepoolShader.Parameters["period"].SetValue(32.0f);
+        */
+
         _spriteBatch.Draw(
             customTarget,
             new Vector2(0.0f, (float)SCREEN_RECT.Height / 2.0f),
