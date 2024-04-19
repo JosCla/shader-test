@@ -16,6 +16,12 @@ public class Game1 : Game
     private Effect _dripdropShader;
     private Effect _wavepoolShader;
 
+    public static readonly int MAX_DROPS = 20;
+    private int _currDrop = 0;
+    private int _totalDrops = 0;
+    private Vector3[] _drops;
+    private bool _mouseHeld = false;
+
     public Rectangle SCREEN_RECT
     {
         get { return new Rectangle(Point.Zero, Window.ClientBounds.Size); }
@@ -35,6 +41,7 @@ public class Game1 : Game
         _graphics.ApplyChanges();
 
         _totalTime = 0.0f;
+        _drops = new Vector3[20];
 
         base.Initialize();
     }
@@ -54,6 +61,19 @@ public class Game1 : Game
             Exit();
 
         _totalTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+        if (Mouse.GetState().LeftButton == ButtonState.Pressed) {
+            if (!_mouseHeld) {
+                Point dropPoint = Mouse.GetState().Position;
+                AddDrop(
+                    new Vector2(dropPoint.X, SCREEN_RECT.Height - dropPoint.Y),
+                    _totalTime
+                );
+            }
+            _mouseHeld = true;
+        } else {
+            _mouseHeld = false;
+        }
 
         base.Update(gameTime);
     }
@@ -85,18 +105,11 @@ public class Game1 : Game
         // drawing a watery reflection!
         _spriteBatch.Begin(effect: _dripdropShader);
         _dripdropShader.Parameters["time"].SetValue(_totalTime);
-        _dripdropShader.Parameters["texOffsetMult"].SetValue(0.1f);
-        _dripdropShader.Parameters["sharpness"].SetValue(0.02f);
-        _dripdropShader.Parameters["numDrops"].SetValue(3);
-        _dripdropShader.Parameters["dropCenters"].Elements[0].SetValue(
-            new Vector2(300.0f, 50.0f)
-        );
-        _dripdropShader.Parameters["dropCenters"].Elements[1].SetValue(
-            new Vector2(100.0f, 100.0f)
-        );
-        _dripdropShader.Parameters["dropCenters"].Elements[2].SetValue(
-            new Vector2(700.0f, 200.0f)
-        );
+        _dripdropShader.Parameters["texOffsetMult"].SetValue(0.15f);
+        _dripdropShader.Parameters["sharpness"].SetValue(0.04f);
+
+        _dripdropShader.Parameters["numDrops"].SetValue(_totalDrops);
+        _dripdropShader.Parameters["drops"].SetValue(_drops);
 
         /*
         _spriteBatch.Begin(effect: _wavepoolShader);
@@ -119,5 +132,12 @@ public class Game1 : Game
         _spriteBatch.End();
 
         base.Draw(gameTime);
+    }
+
+    private void AddDrop(Vector2 pos, float time)
+    {
+        _drops[_currDrop] = new Vector3(pos.X, pos.Y, time);
+        _currDrop = (_currDrop + 1) % MAX_DROPS;
+        if (_totalDrops < 20) {_totalDrops++;}
     }
 }
