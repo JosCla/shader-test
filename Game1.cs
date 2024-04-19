@@ -13,6 +13,8 @@ public class Game1 : Game
     private Texture2D _texture;
     private float _totalTime;
 
+    private RenderTarget2D _renderTarget;
+
     private Effect _dripdropShader;
     private Effect _wavepoolShader;
 
@@ -39,6 +41,8 @@ public class Game1 : Game
         _graphics.PreferredBackBufferWidth = (int)(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width * 0.75f);
         _graphics.PreferredBackBufferHeight = (int)(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height * 0.75f);
         _graphics.ApplyChanges();
+
+        _renderTarget = new RenderTarget2D(GraphicsDevice, SCREEN_RECT.Width, SCREEN_RECT.Height);
 
         _totalTime = 0.0f;
         _drops = new Vector3[20];
@@ -88,8 +92,7 @@ public class Game1 : Game
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
         // drawing background
-        RenderTarget2D customTarget = new RenderTarget2D(GraphicsDevice, SCREEN_RECT.Width, SCREEN_RECT.Height);
-        GraphicsDevice.SetRenderTarget(customTarget);
+        GraphicsDevice.SetRenderTarget(_renderTarget);
 
         _spriteBatch.Begin();
         _spriteBatch.Draw(_texture, Vector2.Zero, null, Color.White, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
@@ -99,7 +102,7 @@ public class Game1 : Game
         GraphicsDevice.SetRenderTarget(null);
 
         _spriteBatch.Begin();
-        _spriteBatch.Draw(customTarget, Vector2.Zero, null, Color.White, 0.0f, Vector2.Zero, Vector2.One, SpriteEffects.None, 0.0f);
+        _spriteBatch.Draw(_renderTarget, Vector2.Zero, null, Color.White, 0.0f, Vector2.Zero, Vector2.One, SpriteEffects.None, 0.0f);
         _spriteBatch.End();
 
         // drawing a watery reflection!
@@ -119,9 +122,9 @@ public class Game1 : Game
         */
 
         _spriteBatch.Draw(
-            customTarget,
+            _renderTarget,
             new Vector2(0.0f, (float)SCREEN_RECT.Height / 2.0f),
-            new Rectangle(0, 0, customTarget.Width, customTarget.Height / 2),
+            new Rectangle(0, 0, _renderTarget.Width, _renderTarget.Height / 2),
             Color.CornflowerBlue,
             0.0f,
             Vector2.Zero,
