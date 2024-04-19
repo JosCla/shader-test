@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -17,6 +18,7 @@ public class Game1 : Game
 
     private Effect _dripdropShader;
     private Effect _wavepoolShader;
+    private Effect _colorOffsetShader;
 
     public static readonly int MAX_DROPS = 20;
     private int _currDrop = 0;
@@ -57,6 +59,7 @@ public class Game1 : Game
         _texture = this.Content.Load<Texture2D>("tbound-screenshot-2");
         _dripdropShader = this.Content.Load<Effect>("Shaders/Dripdrop");
         _wavepoolShader = this.Content.Load<Effect>("Shaders/Wavepool");
+        _colorOffsetShader = this.Content.Load<Effect>("Shaders/Coloroffset");
     }
 
     protected override void Update(GameTime gameTime)
@@ -106,6 +109,7 @@ public class Game1 : Game
         _spriteBatch.End();
 
         // drawing a watery reflection!
+        /*
         _spriteBatch.Begin(effect: _dripdropShader);
         _dripdropShader.Parameters["time"].SetValue(_totalTime);
         _dripdropShader.Parameters["texOffsetMult"].SetValue(0.15f);
@@ -113,6 +117,7 @@ public class Game1 : Game
 
         _dripdropShader.Parameters["numDrops"].SetValue(_totalDrops);
         _dripdropShader.Parameters["drops"].SetValue(_drops);
+        */
 
         /*
         _spriteBatch.Begin(effect: _wavepoolShader);
@@ -121,6 +126,7 @@ public class Game1 : Game
         _wavepoolShader.Parameters["period"].SetValue(32.0f);
         */
 
+        /*
         _spriteBatch.Draw(
             _renderTarget,
             new Vector2(0.0f, (float)SCREEN_RECT.Height / 2.0f),
@@ -130,6 +136,25 @@ public class Game1 : Game
             Vector2.Zero,
             Vector2.One,
             SpriteEffects.FlipVertically,
+            0.0f
+        );
+        */
+        _spriteBatch.Begin(effect: _colorOffsetShader, samplerState: SamplerState.LinearWrap);
+        float time = Math.Max(0.0f, _totalTime - 3.0f);
+        float intensity = time * time * time;
+        _colorOffsetShader.Parameters["redOffset"].SetValue(new Vector3(0.0f, 0.01f, 0.0f) * intensity);
+        _colorOffsetShader.Parameters["greenOffset"].SetValue(new Vector3(-0.006f, -0.006f, 0.0f) * intensity);
+        _colorOffsetShader.Parameters["blueOffset"].SetValue(new Vector3(0.006f, -0.006f, 0.0f) * intensity);
+
+        _spriteBatch.Draw(
+            _renderTarget,
+            Vector2.Zero,
+            null,
+            Color.White,
+            0.0f,
+            Vector2.Zero,
+            Vector2.One,
+            SpriteEffects.None,
             0.0f
         );
         _spriteBatch.End();
