@@ -12,6 +12,7 @@ Texture2D SpriteTexture;
 sampler s0;
 
 float time;
+float timeScaleFactor;
 
 float texOffsetMult;
 
@@ -46,7 +47,7 @@ float4 MainPS(PixelInput input) : COLOR
             float xDist = input.Position.x - drops[i].x;
             float yDist = input.Position.y - drops[i].y;
             float trueDistance = sqrt(xDist * xDist + yDist * yDist);
-            float targetDistance = (time - drops[i].z) * 20.0;
+            float targetDistance = (time - drops[i].z) * timeScaleFactor;
             float relativeDistance = trueDistance - targetDistance;
             float offsetFactor = OffsetFactor(relativeDistance);
             float2 offsetDir = float2(xDist, yDist);
