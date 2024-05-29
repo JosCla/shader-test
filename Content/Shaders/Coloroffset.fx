@@ -7,13 +7,11 @@
 	#define PS_SHADERMODEL ps_4_0_level_9_1
 #endif
 
-Texture2D SpriteTexture;
-sampler s0;
-
 float3 redOffset;
 float3 greenOffset;
 float3 blueOffset;
 
+Texture2D SpriteTexture;
 sampler2D SpriteTextureSampler = sampler_state
 {
 	Texture = <SpriteTexture>;

@@ -13,6 +13,12 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin Shaders/BrightWhite.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Shaders/BrightWhite.fx
+
 #begin Shaders/Coloroffset.fx
 /importer:EffectImporter
 /processor:EffectProcessor

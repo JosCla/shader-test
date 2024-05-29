@@ -13,6 +13,7 @@ public class Game1 : Game
 
     private RenderTarget2D _target1;
     private RenderTarget2D _target2;
+    private RenderTarget2D _target3;
 
     private List<OurShader> _allShaders;
     private int _currShader;
@@ -39,6 +40,10 @@ public class Game1 : Game
     {
         get { return _instance._target2; }
     }
+    public static RenderTarget2D TARGET_3
+    {
+        get { return _instance._target3; }
+    }
 
     public Game1()
     {
@@ -52,6 +57,7 @@ public class Game1 : Game
             new DripdropShader(),
             new WavepoolShader(),
             new ColorOffsetShader(),
+            new BrightWhiteShader(),
         };
         _currShader = 0;
         _swapCooldown = 0.0f;
@@ -65,6 +71,7 @@ public class Game1 : Game
 
         _target1 = new RenderTarget2D(GraphicsDevice, RENDER_SCREEN_SIZE.X, RENDER_SCREEN_SIZE.Y);
         _target2 = new RenderTarget2D(GraphicsDevice, RENDER_SCREEN_SIZE.X, RENDER_SCREEN_SIZE.Y);
+        _target3 = new RenderTarget2D(GraphicsDevice, RENDER_SCREEN_SIZE.X, RENDER_SCREEN_SIZE.Y);
 
         foreach (OurShader shader in _allShaders)
             shader.Initialize();
