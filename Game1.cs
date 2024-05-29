@@ -11,33 +11,50 @@ public class Game1 : Game
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
 
-    private Texture2D _texture;
-    private float _totalTime;
+    private RenderTarget2D _target1;
+    private RenderTarget2D _target2;
 
-    private RenderTarget2D _renderTarget;
-    private RenderTarget2D _tempTarget;
+    private List<OurShader> _allShaders;
+    private int _currShader;
+    private float MAX_SWAP_COOLDOWN = 0.5f;
+    private float _swapCooldown;
 
-    private Effect _dripdropShader;
-    private Effect _wavepoolShader;
-    private Effect _colorOffsetShader;
-
-    public static readonly int MAX_DROPS = 20;
-    private int _currDrop = 0;
-    private int _totalDrops = 0;
-    private Vector3[] _drops;
-    private bool _mouseHeld = false;
-
-    public Rectangle SCREEN_RECT
+    private static Game1 _instance;
+    public static Game1 INSTANCE
     {
-        get { return new Rectangle(Point.Zero, Window.ClientBounds.Size); }
+        get { return _instance; }
+    }
+
+    public static Rectangle SCREEN_RECT
+    {
+        get { return new Rectangle(Point.Zero, _instance.Window.ClientBounds.Size); }
     }
     public static Point RENDER_SCREEN_SIZE = new Point(162, 120);
+
+    public static RenderTarget2D TARGET_1
+    {
+        get { return _instance._target1; }
+    }
+    public static RenderTarget2D TARGET_2
+    {
+        get { return _instance._target2; }
+    }
 
     public Game1()
     {
         _graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
+
+        _instance = this;
+
+        _allShaders = new List<OurShader>() {
+            new DripdropShader(),
+            new WavepoolShader(),
+            new ColorOffsetShader(),
+        };
+        _currShader = 0;
+        _swapCooldown = 0.0f;
     }
 
     protected override void Initialize()
@@ -46,11 +63,11 @@ public class Game1 : Game
         _graphics.PreferredBackBufferHeight = (int)(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height * 0.75f);
         _graphics.ApplyChanges();
 
-        _renderTarget = new RenderTarget2D(GraphicsDevice, RENDER_SCREEN_SIZE.X, RENDER_SCREEN_SIZE.Y);
-        _tempTarget = new RenderTarget2D(GraphicsDevice, RENDER_SCREEN_SIZE.X, RENDER_SCREEN_SIZE.Y);
+        _target1 = new RenderTarget2D(GraphicsDevice, RENDER_SCREEN_SIZE.X, RENDER_SCREEN_SIZE.Y);
+        _target2 = new RenderTarget2D(GraphicsDevice, RENDER_SCREEN_SIZE.X, RENDER_SCREEN_SIZE.Y);
 
-        _totalTime = 0.0f;
-        _drops = new Vector3[20];
+        foreach (OurShader shader in _allShaders)
+            shader.Initialize();
 
         base.Initialize();
     }
@@ -59,10 +76,10 @@ public class Game1 : Game
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-        _texture = this.Content.Load<Texture2D>("tbound-screenshot-3");
-        _dripdropShader = this.Content.Load<Effect>("Shaders/Dripdrop");
-        _wavepoolShader = this.Content.Load<Effect>("Shaders/Wavepool");
-        _colorOffsetShader = this.Content.Load<Effect>("Shaders/Coloroffset");
+        foreach (OurShader shader in _allShaders)
+            shader.LoadContent(Content);
+
+        base.LoadContent();
     }
 
     protected override void Update(GameTime gameTime)
@@ -70,125 +87,42 @@ public class Game1 : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-        _totalTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
+        if (Keyboard.GetState().IsKeyDown(Keys.OemPlus))
+            SelectShader(_currShader + 1);
+        else if (Keyboard.GetState().IsKeyDown(Keys.OemMinus))
+            SelectShader(_currShader - 1);
 
-        if (Mouse.GetState().LeftButton == ButtonState.Pressed) {
-            if (!_mouseHeld && _totalTime > 5.0f) {
-                Point dropPoint = Mouse.GetState().Position;
-                Vector2 relativeDropPoint = new Vector2(
-                    (float)dropPoint.X / (float)SCREEN_RECT.Width,
-                    (float)dropPoint.Y / (float)SCREEN_RECT.Height
-                );
-                AddDrop(
-                    new Vector2(
-                        relativeDropPoint.X * (float)RENDER_SCREEN_SIZE.X,
-                        relativeDropPoint.Y * (float)RENDER_SCREEN_SIZE.Y
-                    ),
-                    _totalTime
-                );
-            }
-            _mouseHeld = true;
-        } else {
-            _mouseHeld = false;
-        }
+        _swapCooldown -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+        _allShaders[_currShader].Update((float)gameTime.ElapsedGameTime.TotalSeconds);
 
         base.Update(gameTime);
     }
 
     protected override void Draw(GameTime gameTime)
     {
-        Vector2 scale = new Vector2(
-            (float)RENDER_SCREEN_SIZE.X / (float)_texture.Width,
-            (float)RENDER_SCREEN_SIZE.Y / (float)_texture.Height
-        );
-
         GraphicsDevice.Clear(Color.CornflowerBlue);
-
-        // drawing background to a texture
-        GraphicsDevice.SetRenderTarget(_tempTarget);
-
-        _spriteBatch.Begin();
-        _spriteBatch.Draw(_texture, Vector2.Zero, null, Color.White, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
-        _spriteBatch.End();
-
-        // drawing it again to a small screen
-        GraphicsDevice.SetRenderTarget(_renderTarget);
-
-        _spriteBatch.Begin();
-        _spriteBatch.Draw(_tempTarget, Vector2.Zero, null, Color.White, 0.0f, Vector2.Zero, Vector2.One, SpriteEffects.None, 0.0f);
-        _spriteBatch.End();
-
-        // drawing a watery reflection!
-        _spriteBatch.Begin(effect: _dripdropShader, samplerState: SamplerState.PointWrap);
-        _dripdropShader.Parameters["time"].SetValue(_totalTime);
-        _dripdropShader.Parameters["timeScaleFactor"].SetValue(10.0f);
-        _dripdropShader.Parameters["texOffsetMult"].SetValue(0.1f);
-        _dripdropShader.Parameters["sharpness"].SetValue(0.08f);
-
-        _dripdropShader.Parameters["numDrops"].SetValue(_totalDrops);
-        _dripdropShader.Parameters["drops"].SetValue(_drops);
-
-        /*
-        _spriteBatch.Begin(effect: _wavepoolShader);
-        _wavepoolShader.Parameters["time"].SetValue(_totalTime);
-        _wavepoolShader.Parameters["texOffsetMult"].SetValue(0.01f);
-        _wavepoolShader.Parameters["period"].SetValue(32.0f);
-        */
-
-        _spriteBatch.Draw(
-            _tempTarget,
-            new Vector2(0.0f, (float)_renderTarget.Height / 2.0f),
-            new Rectangle(0, 0, _renderTarget.Width, _renderTarget.Height / 2),
-            Color.CornflowerBlue,
-            0.0f,
-            Vector2.Zero,
-            Vector2.One,
-            SpriteEffects.FlipVertically,
-            0.0f
-        );
-
-        _spriteBatch.End();
-
-        /*
-        _spriteBatch.Begin(effect: _colorOffsetShader, samplerState: SamplerState.PointWrap);
-        float time = Math.Max(0.0f, _totalTime - 3.0f);
-        float intensity = time * time * time;
-        _colorOffsetShader.Parameters["redOffset"].SetValue(new Vector3(0.0f, 0.01f, 0.0f) * intensity);
-        _colorOffsetShader.Parameters["greenOffset"].SetValue(new Vector3(-0.006f, -0.006f, 0.0f) * intensity);
-        _colorOffsetShader.Parameters["blueOffset"].SetValue(new Vector3(0.006f, -0.006f, 0.0f) * intensity);
-
-        _spriteBatch.Draw(
-            _renderTarget,
-            Vector2.Zero,
-            null,
-            Color.White,
-            0.0f,
-            Vector2.Zero,
-            Vector2.One,
-            SpriteEffects.None,
-            0.0f
-        );
-        _spriteBatch.End();
-        */
-
-        // finally copying that all to the screen
         GraphicsDevice.SetRenderTarget(null);
 
-        Vector2 screenScale = new Vector2(
-            (float)SCREEN_RECT.Width / (float)_renderTarget.Width,
-            (float)SCREEN_RECT.Height / (float)_renderTarget.Height
+        _allShaders[_currShader].Draw(
+            (float)gameTime.ElapsedGameTime.TotalSeconds,
+            GraphicsDevice,
+            _spriteBatch
         );
-        _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-        _spriteBatch.Draw(_renderTarget, Vector2.Zero, null, Color.White, 0.0f, Vector2.Zero, screenScale, SpriteEffects.None, 0.0f);
-        _spriteBatch.End();
 
         base.Draw(gameTime);
     }
 
-    private void AddDrop(Vector2 pos, float time)
+    private void SelectShader(int index)
     {
-        _drops[_currDrop] = new Vector3(pos.X, pos.Y, time);
-        _currDrop = (_currDrop + 1) % MAX_DROPS;
-        if (_totalDrops < 20) {_totalDrops++;}
+        if (_swapCooldown > 0.0f) return;
+
+        index = index % _allShaders.Count;
+        if (index < 0) index += _allShaders.Count;
+
+        _currShader = index;
+        _allShaders[index].Reset();
+
+        _swapCooldown = MAX_SWAP_COOLDOWN;
     }
 }
