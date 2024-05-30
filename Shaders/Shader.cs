@@ -50,6 +50,7 @@ namespace shader_test
         protected void DrawTargetToScreen(GraphicsDevice graphicsDevice, SpriteBatch spriteBatch, RenderTarget2D target)
         {
             graphicsDevice.SetRenderTarget(null);
+            graphicsDevice.Clear(Color.CornflowerBlue);
 
             Vector2 screenScale = new Vector2(
                 (float)Game1.SCREEN_RECT.Width / (float)target.Width,

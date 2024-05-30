@@ -40,7 +40,7 @@ MainPixelOutput MainPS(MainPixelInput input)
     float4 color = tex2D(SpriteTextureSampler, input.TexCoord);
     float4 brightColor = color;
     if (Brightness(color) < brightThreshold)
-        brightColor = float4(0.0, 0.0, 0.0, 1.0);
+        brightColor = float4(0.0, 0.0, 0.0, 0.0);
 
     output.Color = color;
     output.Bright = brightColor;

@@ -39,6 +39,9 @@ namespace shader_test
             // drawing background to a texture
             DrawTexInTarget(graphicsDevice, spriteBatch, Game1.TARGET_1);
 
+            graphicsDevice.SetRenderTarget(Game1.TARGET_3);
+            graphicsDevice.Clear(Color.Transparent);
+
             // drawing it, again, to a simple output and a brightness output
             RenderTargetBinding[] bindings = new RenderTargetBinding[2] {
                 new RenderTargetBinding(Game1.TARGET_2),
@@ -47,7 +50,7 @@ namespace shader_test
             graphicsDevice.SetRenderTargets(bindings);
 
             _brightWhiteShader.Parameters["brightThreshold"].SetValue(_threshold);
-            spriteBatch.Begin(effect: _brightWhiteShader);
+            spriteBatch.Begin(effect: _brightWhiteShader, blendState: BlendState.Opaque);
             spriteBatch.Draw(Game1.TARGET_1, Vector2.Zero, null, Color.White);
             spriteBatch.End();
 
