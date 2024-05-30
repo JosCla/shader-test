@@ -47,16 +47,16 @@ namespace shader_test
             spriteBatch.End();
         }
 
-        protected void DrawTargetToScreen(GraphicsDevice graphicsDevice, SpriteBatch spriteBatch, RenderTarget2D target)
+        protected void DrawTargetToScreen(GraphicsDevice graphicsDevice, SpriteBatch spriteBatch, RenderTarget2D target, bool clearTarget = true)
         {
             graphicsDevice.SetRenderTarget(null);
-            graphicsDevice.Clear(Color.CornflowerBlue);
+            if (clearTarget) graphicsDevice.Clear(Color.CornflowerBlue);
 
             Vector2 screenScale = new Vector2(
                 (float)Game1.SCREEN_RECT.Width / (float)target.Width,
                 (float)Game1.SCREEN_RECT.Height / (float)target.Height
             );
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp, blendState: BlendState.AlphaBlend);
             spriteBatch.Draw(target, Vector2.Zero, null, Color.White, 0.0f, Vector2.Zero, screenScale, SpriteEffects.None, 0.0f);
             spriteBatch.End();
         }

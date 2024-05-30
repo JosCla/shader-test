@@ -54,6 +54,7 @@ public class Game1 : Game
         _instance = this;
 
         _allShaders = new List<OurShader>() {
+            new BloomShader(),
             new DripdropShader(),
             new WavepoolShader(),
             new ColorOffsetShader(),
