@@ -33,6 +33,33 @@ namespace shader_test
             spriteBatch.End();
         }
 
+        protected void DrawTexInTarget(GraphicsDevice graphicsDevice, SpriteBatch spriteBatch, RenderTarget2D target)
+        {
+            Vector2 scale = new Vector2(
+                (float)Game1.RENDER_SCREEN_SIZE.X / (float)_texture.Width,
+                (float)Game1.RENDER_SCREEN_SIZE.Y / (float)_texture.Height
+            );
+
+            graphicsDevice.SetRenderTarget(target);
+
+            spriteBatch.Begin();
+            spriteBatch.Draw(_texture, Vector2.Zero, null, Color.White, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
+            spriteBatch.End();
+        }
+
+        protected void DrawTargetToScreen(GraphicsDevice graphicsDevice, SpriteBatch spriteBatch, RenderTarget2D target)
+        {
+            graphicsDevice.SetRenderTarget(null);
+
+            Vector2 screenScale = new Vector2(
+                (float)Game1.SCREEN_RECT.Width / (float)target.Width,
+                (float)Game1.SCREEN_RECT.Height / (float)target.Height
+            );
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            spriteBatch.Draw(target, Vector2.Zero, null, Color.White, 0.0f, Vector2.Zero, screenScale, SpriteEffects.None, 0.0f);
+            spriteBatch.End();
+        }
+
         public virtual string GetTexturePath()
         {
             return "tbound-screenshot-3";

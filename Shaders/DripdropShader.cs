@@ -53,17 +53,8 @@ namespace shader_test
 
         public override void Draw(float timeElapsed, GraphicsDevice graphicsDevice, SpriteBatch spriteBatch)
         {
-            Vector2 scale = new Vector2(
-                (float)Game1.RENDER_SCREEN_SIZE.X / (float)_texture.Width,
-                (float)Game1.RENDER_SCREEN_SIZE.Y / (float)_texture.Height
-            );
-
             // drawing background to a texture
-            graphicsDevice.SetRenderTarget(Game1.TARGET_1);
-
-            spriteBatch.Begin();
-            spriteBatch.Draw(_texture, Vector2.Zero, null, Color.White, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
-            spriteBatch.End();
+            DrawTexInTarget(graphicsDevice, spriteBatch, Game1.TARGET_1);
 
             // drawing it again to a small screen
             graphicsDevice.SetRenderTarget(Game1.TARGET_2);
@@ -97,15 +88,7 @@ namespace shader_test
             spriteBatch.End();
 
             // finally copying that all to the screen
-            graphicsDevice.SetRenderTarget(null);
-
-            Vector2 screenScale = new Vector2(
-                (float)Game1.SCREEN_RECT.Width / (float)Game1.TARGET_2.Width,
-                (float)Game1.SCREEN_RECT.Height / (float)Game1.TARGET_2.Height
-            );
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            spriteBatch.Draw(Game1.TARGET_2, Vector2.Zero, null, Color.White, 0.0f, Vector2.Zero, screenScale, SpriteEffects.None, 0.0f);
-            spriteBatch.End();
+            DrawTargetToScreen(graphicsDevice, spriteBatch, Game1.TARGET_2);
         }
 
         private void AddDrop(Vector2 pos, float time)
