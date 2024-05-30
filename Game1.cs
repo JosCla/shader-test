@@ -58,6 +58,7 @@ public class Game1 : Game
             new WavepoolShader(),
             new ColorOffsetShader(),
             new BrightWhiteShader(),
+            new SimpleBlurShader(),
         };
         _currShader = 0;
         _swapCooldown = 0.0f;
