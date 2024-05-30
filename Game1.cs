@@ -60,6 +60,7 @@ public class Game1 : Game
             new BrightWhiteShader(),
             new SimpleBlurShader(),
             new BloomShader(),
+            new BloomBiasShader(),
         };
         _currShader = 0;
         _swapCooldown = 0.0f;

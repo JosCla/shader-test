@@ -19,6 +19,12 @@
 /processorParam:DebugMode=Auto
 /build:Shaders/Bloom.fx
 
+#begin Shaders/BloomBias.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Shaders/BloomBias.fx
+
 #begin Shaders/BrightWhite.fx
 /importer:EffectImporter
 /processor:EffectProcessor
