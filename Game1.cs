@@ -54,12 +54,12 @@ public class Game1 : Game
         _instance = this;
 
         _allShaders = new List<OurShader>() {
-            new BloomShader(),
             new DripdropShader(),
             new WavepoolShader(),
             new ColorOffsetShader(),
             new BrightWhiteShader(),
             new SimpleBlurShader(),
+            new BloomShader(),
         };
         _currShader = 0;
         _swapCooldown = 0.0f;

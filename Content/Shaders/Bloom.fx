@@ -7,8 +7,6 @@
 	#define PS_SHADERMODEL ps_4_0_level_9_1
 #endif
 
-const static float brightThreshold = 0.75;
-
 Texture2D SpriteTexture;
 sampler2D SpriteTextureSampler = sampler_state
 {
@@ -21,6 +19,8 @@ struct MainPixelInput
     float4 Color: COLOR0;
     float2 TexCoord: TEXCOORD0;
 };
+
+uniform float brightThreshold;
 
 // credit to joey devries for brightness and gaussian coefficients!
 // (and also for a great explanation of bloom) https://learnopengl.com/Advanced-Lighting/Bloom
@@ -44,6 +44,8 @@ const static float gaussCoeffs[NUM_SAMPLES] = {0.227027, 0.1945946, 0.1216216, 0
 uniform int texWidth;
 uniform int texHeight;
 
+uniform float movementMult;
+
 float4 HorizBlurPS(MainPixelInput input) : COLOR0
 {
     float movement = 1.0 / texWidth;
@@ -52,11 +54,11 @@ float4 HorizBlurPS(MainPixelInput input) : COLOR0
     {
         res += tex2D(
             SpriteTextureSampler,
-            input.TexCoord + float2(i * movement, 0)
+            input.TexCoord + float2(i * movement * movementMult, 0)
         ) * gaussCoeffs[i];
         res += tex2D(
             SpriteTextureSampler,
-            input.TexCoord - float2(i * movement, 0)
+            input.TexCoord - float2(i * movement * movementMult, 0)
         ) * gaussCoeffs[i];
     }
     return res;
@@ -70,11 +72,11 @@ float4 VertBlurPS(MainPixelInput input) : COLOR0
     {
         res += tex2D(
             SpriteTextureSampler,
-            input.TexCoord + float2(0, i * movement)
+            input.TexCoord + float2(0, i * movement * movementMult)
         ) * gaussCoeffs[i];
         res += tex2D(
             SpriteTextureSampler,
-            input.TexCoord - float2(0, i * movement)
+            input.TexCoord - float2(0, i * movement * movementMult)
         ) * gaussCoeffs[i];
     }
     return res;
