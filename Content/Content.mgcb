@@ -43,6 +43,12 @@
 /processorParam:DebugMode=Auto
 /build:Shaders/Dripdrop.fx
 
+#begin Shaders/Perlin.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Shaders/Perlin.fx
+
 #begin Shaders/SimpleBlur.fx
 /importer:EffectImporter
 /processor:EffectProcessor

@@ -61,6 +61,7 @@ public class Game1 : Game
             new SimpleBlurShader(),
             new BloomShader(),
             new BloomBiasShader(),
+            new PerlinShader(),
         };
         _currShader = 0;
         _swapCooldown = 0.0f;
