@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace shader_test
 {
@@ -11,9 +12,15 @@ namespace shader_test
         private Effect _perlinShader;
         private Random _random;
 
+        private float _movementMult;
+        private float _gridWidth;
+
         public PerlinShader() : base()
         {
             this._random = new Random();
+
+            this._movementMult = 5.0f;
+            this._gridWidth = 10.0f;
         }
 
         public override void LoadContent(ContentManager content)
@@ -21,8 +28,27 @@ namespace shader_test
             base.LoadContent(content);
 
             _perlinShader = content.Load<Effect>("Shaders/Perlin");
+            _perlinShader.Parameters["movementMult"]?.SetValue(_movementMult);
+            _perlinShader.Parameters["gridWidth"]?.SetValue(_gridWidth);
+        }
 
-            GenerateLookupTable();
+        public override void Update(float timeElapsed)
+        {
+            base.Update(timeElapsed);
+
+            if (Mouse.GetState().LeftButton == ButtonState.Pressed) {
+                Point mousePos = Mouse.GetState().Position;
+                Vector2 relativeMousePos = new Vector2(
+                    (float)mousePos.X / (float)Game1.SCREEN_RECT.Width,
+                    (float)mousePos.Y / (float)Game1.SCREEN_RECT.Height
+                );
+
+                _movementMult = relativeMousePos.X * 10.0f;
+                _gridWidth = relativeMousePos.Y * 20.0f;
+
+                _perlinShader.Parameters["movementMult"]?.SetValue(_movementMult);
+                _perlinShader.Parameters["gridWidth"]?.SetValue(_gridWidth);
+            }
         }
 
         public override void Draw(float timeElapsed, GraphicsDevice graphicsDevice, SpriteBatch spriteBatch)
@@ -32,8 +58,9 @@ namespace shader_test
 
             // using perlin noise to wacky-ify that texture
             graphicsDevice.SetRenderTarget(Game1.TARGET_2);
-            _perlinShader.Parameters["texWidth"].SetValue(Game1.TARGET_1.Width);
-            _perlinShader.Parameters["texHeight"].SetValue(Game1.TARGET_1.Height);
+            _perlinShader.Parameters["texWidth"]?.SetValue(Game1.TARGET_1.Width);
+            _perlinShader.Parameters["texHeight"]?.SetValue(Game1.TARGET_1.Height);
+            _perlinShader.Parameters["time"]?.SetValue(_totalTime);
             spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: _perlinShader);
             spriteBatch.Draw(Game1.TARGET_1, Vector2.Zero, null, Color.White);
             spriteBatch.End();
@@ -42,6 +69,8 @@ namespace shader_test
             DrawTargetToScreen(graphicsDevice, spriteBatch, Game1.TARGET_2);
         }
 
+        // (unused because lookup table was too costly on shader side)
+        /*
         private void GenerateLookupTable()
         {
             // putting numbers 0 to 127 in an array
@@ -67,5 +96,6 @@ namespace shader_test
             // passing that all along to the shader
             _perlinShader.Parameters["lookup"].SetValue(lookup.ToArray());
         }
+        */
     }
 }
