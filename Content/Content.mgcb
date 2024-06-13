@@ -43,11 +43,11 @@
 /processorParam:DebugMode=Auto
 /build:Shaders/Dripdrop.fx
 
-#begin Shaders/Perlin.fx
+#begin Shaders/BoxNoise.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Shaders/Perlin.fx
+/build:Shaders/BoxNoise.fx
 
 #begin Shaders/SimpleBlur.fx
 /importer:EffectImporter
