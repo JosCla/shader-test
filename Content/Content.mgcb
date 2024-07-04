@@ -25,6 +25,12 @@
 /processorParam:DebugMode=Auto
 /build:Shaders/BloomBias.fx
 
+#begin Shaders/BoxNoise.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Shaders/BoxNoise.fx
+
 #begin Shaders/BrightWhite.fx
 /importer:EffectImporter
 /processor:EffectProcessor
@@ -43,17 +49,17 @@
 /processorParam:DebugMode=Auto
 /build:Shaders/Dripdrop.fx
 
-#begin Shaders/BoxNoise.fx
-/importer:EffectImporter
-/processor:EffectProcessor
-/processorParam:DebugMode=Auto
-/build:Shaders/BoxNoise.fx
-
 #begin Shaders/SimpleBlur.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
 /build:Shaders/SimpleBlur.fx
+
+#begin Shaders/SlideWarp.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Shaders/SlideWarp.fx
 
 #begin Shaders/Test.fx
 /importer:EffectImporter

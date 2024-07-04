@@ -35,6 +35,11 @@ namespace shader_test
 
         protected void DrawTexInTarget(GraphicsDevice graphicsDevice, SpriteBatch spriteBatch, RenderTarget2D target)
         {
+            DrawTexInTarget(graphicsDevice, spriteBatch, target, _texture);
+        }
+
+        protected void DrawTexInTarget(GraphicsDevice graphicsDevice, SpriteBatch spriteBatch, RenderTarget2D target, Texture2D texture)
+        {
             Vector2 scale = new Vector2(
                 (float)Game1.RENDER_SCREEN_SIZE.X / (float)_texture.Width,
                 (float)Game1.RENDER_SCREEN_SIZE.Y / (float)_texture.Height
@@ -43,7 +48,7 @@ namespace shader_test
             graphicsDevice.SetRenderTarget(target);
 
             spriteBatch.Begin();
-            spriteBatch.Draw(_texture, Vector2.Zero, null, Color.White, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
+            spriteBatch.Draw(texture, Vector2.Zero, null, Color.White, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
             spriteBatch.End();
         }
 
