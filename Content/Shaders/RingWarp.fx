@@ -17,9 +17,9 @@ float time;
 int numDrops;
 float4 drops[MAX_DROPS];
 
-const static float timeScaleFactor = 30.0;
+const static float timeScaleFactor = 120.0;
 const static float sigmoidSharpness = 0.1;
-const static float sigmoidOffset = 0.8 * timeScaleFactor;
+const static float sigmoidOffset = 0.0;
 
 Texture2D FirstTexture;
 sampler2D FirstTextureSampler = sampler_state
