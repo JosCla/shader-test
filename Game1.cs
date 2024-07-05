@@ -63,6 +63,7 @@ public class Game1 : Game
             new BloomBiasShader(),
             new BoxNoiseShader(),
             new SlideWarpShader(),
+            new RingWarpShader(),
         };
         _currShader = 0;
         _swapCooldown = 0.0f;
