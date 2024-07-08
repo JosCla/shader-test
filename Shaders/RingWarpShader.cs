@@ -83,10 +83,19 @@ namespace shader_test
 
         private void AddDrop(Vector2 pos, float time)
         {
+            if (_totalDrops == MAX_DROPS) {
+                _totalDrops -= 2;
+                _currDrop -= 2;
+
+                for (int i = 0; i < (MAX_DROPS - 2); i++) {
+                    _drops[i] = _drops[i + 2];
+                }
+            }
+
             _drops[_currDrop] = new Vector4(pos.X, pos.Y, time, _currOffset);
-            _currDrop = (_currDrop + 1) % MAX_DROPS;
+            _currDrop++;
             _currOffset *= -1.0f;
-            if (_totalDrops < 20) {_totalDrops++;}
+            _totalDrops++;
         }
 
         public override void Reset()
