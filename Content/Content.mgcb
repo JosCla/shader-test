@@ -79,6 +79,12 @@
 /processorParam:DebugMode=Auto
 /build:Shaders/Wavepool.fx
 
+#begin Shaders/WavyRing.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Shaders/WavyRing.fx
+
 #begin tbound-screenshot-2.png
 /importer:TextureImporter
 /processor:TextureProcessor
