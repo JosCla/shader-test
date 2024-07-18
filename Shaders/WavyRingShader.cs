@@ -10,6 +10,9 @@ namespace shader_test
 
         private float _scale;
 
+        private float _sharpness;
+        private float _magnitude;
+
         public WavyRingShader() : base() {}
 
         public override void LoadContent(ContentManager content)
@@ -24,6 +27,18 @@ namespace shader_test
             return "tbound-screenshot-5";
         }
 
+        public override void Update(float timeElapsed)
+        {
+            if (InputUtils.IsMouseHeld()) {
+                Vector2 relativeMousePos = InputUtils.GetBoundedMousePos();
+
+                _sharpness = relativeMousePos.X * 10.0f;
+                _magnitude = relativeMousePos.Y * 0.5f;
+            }
+
+            base.Update(timeElapsed);
+        }
+
         public override void Draw(float timeElapsed, GraphicsDevice graphicsDevice, SpriteBatch spriteBatch)
         {
             Vector2 actualTexSize = _texture.Bounds.Size.ToVector2() * _scale;
@@ -31,6 +46,10 @@ namespace shader_test
             pos.Floor();
 
             graphicsDevice.Clear(Color.Black);
+
+            _wavyRingShader.Parameters["perlinSharpness"]?.SetValue(_sharpness);
+            _wavyRingShader.Parameters["perlinMagnitude"]?.SetValue(_magnitude);
+            _wavyRingShader.Parameters["time"]?.SetValue(_totalTime);
             spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: _wavyRingShader);
             spriteBatch.Draw(_texture, pos, null, Color.White, 0.0f, Vector2.Zero, new Vector2(_scale), SpriteEffects.None, 0.0f);
             spriteBatch.End();
@@ -41,6 +60,8 @@ namespace shader_test
             base.Reset();
 
             _scale = 2.0f;
+            _sharpness = 5.0f;
+            _magnitude = 0.2f;
         }
     }
 }
