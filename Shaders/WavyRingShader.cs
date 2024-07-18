@@ -60,8 +60,8 @@ namespace shader_test
             base.Reset();
 
             _scale = 2.0f;
-            _sharpness = 5.0f;
-            _magnitude = 0.2f;
+            _sharpness = 2.3f;
+            _magnitude = 0.15f;
         }
     }
 }
