@@ -1,8 +1,6 @@
-using System.ComponentModel.DataAnnotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace shader_test
 {
@@ -13,7 +11,6 @@ namespace shader_test
         private int _currDrop;
         private int _totalDrops;
         private Vector3[] _drops;
-        private bool _mouseHeld;
 
         private Effect _dripdropShader;
 
@@ -28,24 +25,16 @@ namespace shader_test
 
         public override void Update(float timeElapsed)
         {
-            if (Mouse.GetState().LeftButton == ButtonState.Pressed) {
-                if (!_mouseHeld) {
-                    Point dropPoint = Mouse.GetState().Position;
-                    Vector2 relativeDropPoint = new Vector2(
-                        (float)dropPoint.X / (float)Game1.SCREEN_RECT.Width,
-                        (float)dropPoint.Y / (float)Game1.SCREEN_RECT.Height
-                    );
-                    AddDrop(
-                        new Vector2(
-                            relativeDropPoint.X * (float)Game1.RENDER_SCREEN_SIZE.X,
-                            relativeDropPoint.Y * (float)Game1.RENDER_SCREEN_SIZE.Y
-                        ),
-                        _totalTime
-                    );
-                }
-                _mouseHeld = true;
-            } else {
-                _mouseHeld = false;
+            if (InputUtils.IsMouseOnPress()) {
+                Vector2 relativeDropPoint = InputUtils.GetMousePos();
+
+                AddDrop(
+                    new Vector2(
+                        relativeDropPoint.X * (float)Game1.RENDER_SCREEN_SIZE.X,
+                        relativeDropPoint.Y * (float)Game1.RENDER_SCREEN_SIZE.Y
+                    ),
+                    _totalTime
+                );
             }
 
             base.Update(timeElapsed);
@@ -105,7 +94,6 @@ namespace shader_test
             _drops = new Vector3[20];
             _currDrop = 0;
             _totalDrops = 0;
-            _mouseHeld = false;
         }
     }
 }

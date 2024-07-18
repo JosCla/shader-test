@@ -1,7 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace shader_test
 {
@@ -24,12 +23,8 @@ namespace shader_test
         {
             base.Update(timeElapsed);
 
-            if (Mouse.GetState().LeftButton == ButtonState.Pressed) {
-                Point mousePos = Mouse.GetState().Position;
-                Vector2 relativeMousePos = new Vector2(
-                    (float)mousePos.X / (float)Game1.SCREEN_RECT.Width,
-                    (float)mousePos.Y / (float)Game1.SCREEN_RECT.Height
-                );
+            if (InputUtils.IsMouseHeld()) {
+                Vector2 relativeMousePos = InputUtils.GetMousePos();
 
                 _threshold = relativeMousePos.X;
                 _movementMult = relativeMousePos.Y * 1.3f;

@@ -2,7 +2,6 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace shader_test
 {
@@ -33,12 +32,8 @@ namespace shader_test
         {
             base.Update(timeElapsed);
 
-            if (Mouse.GetState().LeftButton == ButtonState.Pressed) {
-                Point mousePos = Mouse.GetState().Position;
-                Vector2 relativeMousePos = new Vector2(
-                    Math.Clamp((float)mousePos.X / (float)Game1.SCREEN_RECT.Width, 0.0f, 1.0f),
-                    Math.Clamp((float)mousePos.Y / (float)Game1.SCREEN_RECT.Height, 0.0f, 1.0f)
-                );
+            if (InputUtils.IsMouseHeld()) {
+                Vector2 relativeMousePos = InputUtils.GetBoundedMousePos();
 
                 _blendFactor = relativeMousePos.X;
                 // _intensity = relativeMousePos.Y * 200.0f;

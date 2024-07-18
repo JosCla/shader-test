@@ -1,8 +1,6 @@
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace shader_test
 {
@@ -17,7 +15,6 @@ namespace shader_test
         private float _currOffset;
         private int _totalDrops;
         private Vector4[] _drops;
-        private bool _mouseHeld;
 
         public RingWarpShader() : base() {}
 
@@ -36,24 +33,16 @@ namespace shader_test
 
         public override void Update(float timeElapsed)
         {
-            if (Mouse.GetState().LeftButton == ButtonState.Pressed) {
-                if (!_mouseHeld) {
-                    Point dropPoint = Mouse.GetState().Position;
-                    Vector2 relativeDropPoint = new Vector2(
-                        Math.Clamp((float)dropPoint.X / (float)Game1.SCREEN_RECT.Width, 0.0f, 1.0f),
-                        Math.Clamp((float)dropPoint.Y / (float)Game1.SCREEN_RECT.Height, 0.0f, 1.0f)
-                    );
-                    AddDrop(
-                        new Vector2(
-                            relativeDropPoint.X * (float)Game1.RENDER_SCREEN_SIZE.X,
-                            relativeDropPoint.Y * (float)Game1.RENDER_SCREEN_SIZE.Y
-                        ),
-                        _totalTime
-                    );
-                }
-                _mouseHeld = true;
-            } else {
-                _mouseHeld = false;
+            if (InputUtils.IsMouseOnPress()) {
+                Vector2 relativeDropPoint = InputUtils.GetMousePos();
+
+                AddDrop(
+                    new Vector2(
+                        relativeDropPoint.X * (float)Game1.RENDER_SCREEN_SIZE.X,
+                        relativeDropPoint.Y * (float)Game1.RENDER_SCREEN_SIZE.Y
+                    ),
+                    _totalTime
+                );
             }
 
             base.Update(timeElapsed);
@@ -106,7 +95,6 @@ namespace shader_test
             _currDrop = 0;
             _currOffset = 1.0f;
             _totalDrops = 0;
-            _mouseHeld = false;
         }
     }
 }

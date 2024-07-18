@@ -101,6 +101,8 @@ public class Game1 : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
+        InputUtils.Update();
+
         if (Keyboard.GetState().IsKeyDown(Keys.OemPlus))
             SelectShader(_currShader + 1);
         else if (Keyboard.GetState().IsKeyDown(Keys.OemMinus))
