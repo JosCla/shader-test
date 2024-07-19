@@ -30,7 +30,7 @@ float SmoothFade(float n) {
 // https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83
 float GetRand(float3 input)
 {
-    return frac(sin(dot(input, float3(17.823, 91.123, 44.144))) * 11238.2);
+    return frac(sin(dot(input, float3(17.823, 91.123, 44.144))) * 11238.2) * 2.0 - 1.0;
 }
 
 float3 GetRand3D(float3 input)
@@ -59,7 +59,7 @@ float GetNoiseAt(float2 pos, float time)
             for (int x = 0; x <= 1; x++) {
                 float3 currPos = fullPos + float3(x, y, z);
 
-                float3 currGradient = GetRand3D(currPos);
+                float3 currGradient = normalize(GetRand3D(currPos));
                 float3 currCenterVec = floatPos - currPos;
 
                 xRes[x] = dot(currGradient, currCenterVec);
