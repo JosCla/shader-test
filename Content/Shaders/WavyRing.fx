@@ -81,8 +81,8 @@ float GetNoiseAt(float2 pos, float time)
 // const static float borderCutoff = 0.2;
 
 // cone
-const static float texCutoff = 0.4;
-const static float borderCutoff = 0.45;
+const static float texCutoff = 0.35;
+const static float borderCutoff = 0.4;
 
 const static float4 borderColor = float4(0.9, 0.9, 0.9, 1.0);
 
@@ -97,18 +97,20 @@ float4 MainPS(MainPixelInput input) : COLOR0
     // getting underlying "circle" height
     float xDist = abs(input.TexCoord.x - 0.5);
     float yDist = abs(input.TexCoord.y - 0.5);
-    // float height = sqrt(xDist * xDist + yDist * yDist); // cone
+    float height = sqrt(xDist * xDist + yDist * yDist); // cone
     // float height = xDist * xDist + yDist * yDist; // paraboloid
     // float height = pow(xDist, 3) + pow(yDist, 3); // cubic paraboloid
-    float height = pow(xDist * xDist * xDist + yDist * yDist * yDist, 1.0 / 3.0); // cubic cone
+    // float height = pow(xDist * xDist * xDist + yDist * yDist * yDist, 1.0 / 3.0); // cubic cone
 
     // adding perlin noise height
-    float noise = GetNoiseAt(input.TexCoord * perlinSharpness, time * timeFactor) * perlinMagnitude;
+    float2 colorOffset = float2(input.Color.a * 123.4, input.Color.a * 567.8);
+    float noise = GetNoiseAt(input.TexCoord * perlinSharpness + colorOffset, time * timeFactor) * perlinMagnitude;
     height += noise;
 
     // doing cutoffs based on result height
     if (height < texCutoff) {
-        return tex2D(SpriteTextureSampler, input.TexCoord) * input.Color;
+        float4 realColor = float4(input.Color.rgb, 1.0);
+        return tex2D(SpriteTextureSampler, input.TexCoord) * realColor;
     } else if (height < borderCutoff) {
         return borderColor;
     } else {
