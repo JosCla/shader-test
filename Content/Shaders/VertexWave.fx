@@ -31,8 +31,10 @@ struct PixelInput
 
 PixelInput MainVS(VertexInput input)
 {
-    PixelInput output;
-    output.Position = mul(mvpMatrix, input.Position);
+    PixelInput output = (PixelInput)0;
+    float4 tempPos = mul(mvpMatrix, input.Position);
+    float4 tempPosOffset = float4(tempPos.x, tempPos.y - input.TexCoord.x * 0.1, tempPos.zw);
+    output.Position = float4(tempPosOffset.xyz, 1.0);
     output.Color = input.Color;
     output.TexCoord = input.TexCoord;
 
