@@ -14,6 +14,11 @@ sampler2D SpriteTextureSampler = sampler_state
 };
 
 uniform float4x4 mvpMatrix;
+uniform float time;
+uniform float intensity;
+
+const static float timeFactor = 0.4;
+const static float sinFactor = 4.0;
 
 struct VertexInput
 {
@@ -32,18 +37,20 @@ struct PixelInput
 PixelInput MainVS(VertexInput input)
 {
     PixelInput output = (PixelInput)0;
-    float4 tempPos = mul(mvpMatrix, input.Position);
-    float4 tempPosOffset = float4(tempPos.x, tempPos.y - input.TexCoord.x * 0.1, tempPos.zw);
-    output.Position = float4(tempPosOffset.xyz, 1.0);
     output.Color = input.Color;
     output.TexCoord = input.TexCoord;
+
+    float4 tempPos = mul(mvpMatrix, input.Position);
+    float offsetY = sin((input.TexCoord.x * sinFactor) + (time * timeFactor)) * intensity;
+    float4 offset = float4(0.0, offsetY, 0.0, 0.0);
+    float4 tempPosOffset = tempPos + offset;
+    output.Position = float4(tempPosOffset.xyz, 1.0);
 
     return output;
 }
 
 float4 MainPS(PixelInput input) : COLOR0
 {
-    // return float4(input.TexCoord.x, input.TexCoord.y, 0.0, 1.0);
     return tex2D(SpriteTextureSampler, input.TexCoord) * input.Color;
 }
 
