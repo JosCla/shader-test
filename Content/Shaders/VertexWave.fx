@@ -18,7 +18,7 @@ uniform float time;
 uniform float intensity;
 
 const static float timeFactor = 0.4;
-const static float sinFactor = 4.0;
+const static float sinFactor = 16.0;
 
 struct VertexInput
 {
@@ -44,7 +44,8 @@ PixelInput MainVS(VertexInput input)
     float offsetY = sin((input.TexCoord.x * sinFactor) + (time * timeFactor)) * intensity;
     float4 offset = float4(0.0, offsetY, 0.0, 0.0);
     float4 tempPosOffset = tempPos + offset;
-    output.Position = float4(tempPosOffset.xyz, 1.0);
+    float4 ndcPos = tempPosOffset + float4(-1.0, 1.0, 0.0, 0.0);
+    output.Position = float4(ndcPos.xyz, 1.0);
 
     return output;
 }

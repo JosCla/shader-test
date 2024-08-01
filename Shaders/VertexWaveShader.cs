@@ -7,6 +7,8 @@ namespace shader_test
 {
     public class VertexWaveShader : OurShader
     {
+        public static readonly float SCALE = 2.0f;
+
         private Effect _vertexWaveEffect;
         private float _intensity;
         private int _numSegs;
@@ -26,8 +28,8 @@ namespace shader_test
 
             if (InputUtils.IsMouseHeld())
             {
-                _intensity = InputUtils.GetBoundedMousePos().X * 0.3f;
-                _numSegs = (int)Math.Floor(InputUtils.GetBoundedMousePos().Y * 10.0f) + 1;
+                _intensity = InputUtils.GetBoundedMousePos().X * 0.2f;
+                _numSegs = (int)Math.Floor(InputUtils.GetBoundedMousePos().Y * 30.0f) + 1;
             }
         }
 
@@ -47,6 +49,11 @@ namespace shader_test
             spriteBatch.Begin(effect: _vertexWaveEffect);
 
             float relWidth = 1.0f / (float)_numSegs;
+            Vector2 topLeft = new Vector2(
+                ((float)width - (_texture.Width * SCALE)) * 0.5f,
+                ((float)height - (_texture.Height * SCALE)) * 0.5f
+            );
+            topLeft.Floor();
             for (int i = 0; i < _numSegs; i++)
             {
                 Point currPos = new Point((int)(relWidth * i * _texture.Width), 0);
@@ -54,7 +61,17 @@ namespace shader_test
 
                 Rectangle sourceRect = new Rectangle(currPos, new Point(nextPos.X - currPos.X, _texture.Height));
 
-                spriteBatch.Draw(_texture, currPos.ToVector2(), sourceRect, Color.White);
+                spriteBatch.Draw(
+                    _texture,
+                    topLeft + currPos.ToVector2() * SCALE,
+                    sourceRect,
+                    Color.White,
+                    0.0f,
+                    Vector2.Zero,
+                    new Vector2(SCALE),
+                    SpriteEffects.None,
+                    0.0f
+                );
 
                 // below has texture tearing
                 /*
@@ -78,8 +95,8 @@ namespace shader_test
         {
             base.Reset();
 
-            _intensity = 0.1f;
-            _numSegs = 3;
+            _intensity = 0.03f;
+            _numSegs = 15;
         }
     }
 }
