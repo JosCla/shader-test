@@ -66,6 +66,7 @@ public class Game1 : Game
             new RingWarpShader(),
             new WavyRingShader(),
             new VertexWaveShader(),
+            new FlagShader(),
         };
         _currShader = 0;
         _swapCooldown = 0.0f;
