@@ -49,6 +49,12 @@
 /processorParam:DebugMode=Auto
 /build:Shaders/Dripdrop.fx
 
+#begin Shaders/FlagShader.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Shaders/FlagShader.fx
+
 #begin Shaders/RingWarp.fx
 /importer:EffectImporter
 /processor:EffectProcessor
