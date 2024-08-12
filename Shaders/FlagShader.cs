@@ -13,11 +13,12 @@ namespace shader_test
         public static readonly float WAVE_END_TIME_MULT = 2.4f;
         public static readonly float WAVE_INNER_TIME_MULT = 3.0f;
 
-        public static readonly float FLAG_HEIGHT = 100.0f;
+        public static readonly float FLAG_HEIGHT = 30.0f;
 
-        public static readonly Vector2 FLAG_ANCHOR_POS = new Vector2(100.0f, 100.0f);
+        public static readonly Vector2 FLAG_ANCHOR_POS = new Vector2(12.0f, 48.0f);
 
         private Effect _flagShader;
+        private Texture2D _flagTex;
 
         private Vector2 _windDir;
 
@@ -28,6 +29,7 @@ namespace shader_test
             base.LoadContent(content);
 
             _flagShader = content.Load<Effect>("Shaders/FlagShader");
+            _flagTex = content.Load<Texture2D>("sample-banner");
         }
 
         public override void Update(float timeElapsed)
@@ -41,17 +43,21 @@ namespace shader_test
                 );
                 mouseDir.Normalize();
 
-                float texAspectRatio = (float)_texture.Width / (float)_texture.Height;
+                float texAspectRatio = (float)_flagTex.Width / (float)_flagTex.Height;
                 _windDir = mouseDir * FLAG_HEIGHT * texAspectRatio;
             }
         }
 
         public override void Draw(float timeElapsed, GraphicsDevice graphicsDevice, SpriteBatch spriteBatch)
         {
+            // drawing background
+            DrawTexInTarget(graphicsDevice, spriteBatch, Game1.TARGET_1);
+
+            // drawing flag on top of it
             Matrix view = Matrix.Identity;
 
-            int width = graphicsDevice.Viewport.Width;
-            int height = graphicsDevice.Viewport.Height;
+            int width = Game1.TARGET_1.Width;
+            int height = Game1.TARGET_1.Height;
             Matrix projection = Matrix.CreateOrthographicOffCenter(0, width, height, 0, 0, 1);
 
             Matrix mvpMatrix = view * projection;
@@ -59,10 +65,10 @@ namespace shader_test
             _flagShader.Parameters["mvpMatrix"]?.SetValue(mvpMatrix);
 
             for (int i = 0; i < WAVE_NUM_SEGS; i++) {
-                int leftUPixel = (int)((float)_texture.Width * (float)i / (float)WAVE_NUM_SEGS);
-                int rightUPixel = (int)((float)_texture.Width * (float)(i + 1) / (float)WAVE_NUM_SEGS);
-                float leftU = (float)leftUPixel / (float)_texture.Width;
-                float rightU = (float)rightUPixel / (float)_texture.Width;
+                int leftUPixel = (int)((float)_flagTex.Width * (float)i / (float)WAVE_NUM_SEGS);
+                int rightUPixel = (int)((float)_flagTex.Width * (float)(i + 1) / (float)WAVE_NUM_SEGS);
+                float leftU = (float)leftUPixel / (float)_flagTex.Width;
+                float rightU = (float)rightUPixel / (float)_flagTex.Width;
 
                 Vector2 pos = Vector2.Floor(GetFlagPos(
                     FLAG_ANCHOR_POS,
@@ -82,17 +88,17 @@ namespace shader_test
 
                 Vector2 scale = new Vector2(
                     (float)(nextPos.X - pos.X) / (float)(rightUPixel - leftUPixel),
-                    FLAG_HEIGHT / _texture.Height
+                    FLAG_HEIGHT / _flagTex.Height
                 );
 
                 Rectangle sourceRect = new Rectangle(
                     leftUPixel, 0,
-                    (rightUPixel - leftUPixel), _texture.Height
+                    (rightUPixel - leftUPixel), _flagTex.Height
                 );
 
-                spriteBatch.Begin(effect: _flagShader);
+                spriteBatch.Begin(effect: _flagShader, samplerState: SamplerState.PointClamp);
                 spriteBatch.Draw(
-                    _texture,
+                    _flagTex,
                     pos,
                     sourceRect,
                     Color.White,
@@ -105,6 +111,8 @@ namespace shader_test
 
                 spriteBatch.End();
             }
+
+            DrawTargetToScreen(graphicsDevice, spriteBatch, Game1.TARGET_1);
         }
 
         private Vector2 GetFlagPos(Vector2 anchorPos, Vector2 lengthVec, float proportion)
@@ -135,7 +143,7 @@ namespace shader_test
 
         public override string GetTexturePath()
         {
-            return "sample-banner";
+            return "tbound-screenshot-4";
         }
 
         public override void Reset()
