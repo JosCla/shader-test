@@ -7,15 +7,15 @@ namespace shader_test
 {
     public class FlagShader : OurShader
     {
-        public static readonly float WAVE_PROPORTION = 0.06f;
+        public static readonly float WAVE_PROPORTION = 0.08f;
         public static readonly int WAVE_NUM_SEGS = 15;
 
-        public static readonly float WAVE_END_TIME_MULT = 2.4f;
-        public static readonly float WAVE_INNER_TIME_MULT = 3.0f;
+        public static readonly float WAVE_END_TIME_MULT = 3.6f;
+        public static readonly float WAVE_INNER_TIME_MULT = 4.5f;
 
         public static readonly float FLAG_HEIGHT = 30.0f;
 
-        public static readonly Vector2 FLAG_ANCHOR_POS = new Vector2(12.0f, 48.0f);
+        public static readonly Vector2 FLAG_ANCHOR_POS = new Vector2(12.0f, 12.0f);
 
         private Effect _flagShader;
         private Texture2D _flagTex;
@@ -52,6 +52,10 @@ namespace shader_test
         {
             // drawing background
             DrawTexInTarget(graphicsDevice, spriteBatch, Game1.TARGET_1);
+
+            // creating a rasterizer state that doesn't do back-face culling
+            RasterizerState flagRastState = new RasterizerState();
+            flagRastState.CullMode = CullMode.None;
 
             // drawing flag on top of it
             Matrix view = Matrix.Identity;
@@ -96,7 +100,7 @@ namespace shader_test
                     (rightUPixel - leftUPixel), _flagTex.Height
                 );
 
-                spriteBatch.Begin(effect: _flagShader, samplerState: SamplerState.PointClamp);
+                spriteBatch.Begin(effect: _flagShader, samplerState: SamplerState.PointClamp, rasterizerState: flagRastState);
                 spriteBatch.Draw(
                     _flagTex,
                     pos,
