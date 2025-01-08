@@ -12,6 +12,9 @@ namespace shader_test
 
         private static InputBit mouseState = new InputBit();
 
+        private static InputBit oneKey = new InputBit();
+        private static InputBit twoKey = new InputBit();
+
         public static void Update()
         {
             absMousePos = Mouse.GetState().Position;
@@ -25,6 +28,9 @@ namespace shader_test
             );
 
             mouseState.Update(Mouse.GetState().LeftButton == ButtonState.Pressed);
+
+            oneKey.Update(Keyboard.GetState().IsKeyDown(Keys.D1));
+            twoKey.Update(Keyboard.GetState().IsKeyDown(Keys.D2));
         }
 
         public static Point GetAbsMousePos()
@@ -50,6 +56,26 @@ namespace shader_test
         public static bool IsMouseOnPress()
         {
             return mouseState.IsOnPress();
+        }
+
+        public static bool IsOneOnPress()
+        {
+            return oneKey.IsOnPress();
+        }
+
+        public static bool IsTwoOnPress()
+        {
+            return twoKey.IsOnPress();
+        }
+
+        public static bool IsOneHeld()
+        {
+            return oneKey.IsHeld();
+        }
+
+        public static bool IsTwoHeld()
+        {
+            return twoKey.IsHeld();
         }
     }
 

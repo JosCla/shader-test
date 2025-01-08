@@ -64,6 +64,7 @@ public class Game1 : Game
             new BoxNoiseShader(),
             new SlideWarpShader(),
             new RingWarpShader(),
+            new SquareWarpShader(),
             new WavyRingShader(),
             new VertexWaveShader(),
             new FlagShader(),
